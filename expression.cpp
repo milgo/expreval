@@ -9,9 +9,7 @@ template <typename T>
 Expression<T>::~Expression(){}
 
 template <typename T> 
-T Expression<T>::evaluate(Context<T>& context){
-  
-}
+T Expression<T>::evaluate(Context<T>& context){}
 
 template <typename T> 
 Expression<T>* Expression<T>::replace(const char* c, Expression<T>& e){}

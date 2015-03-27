@@ -1,13 +1,7 @@
-// (c) Peter Kankowski, 2007. http://smallcode.weblogs.us mailto:kankowski@narod.ru
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include "expreval.h"
-#include "context.h"
-#include "expression.h"
-#include "variableexpr.h"
-#include "sumexpression.h"
-#include "mulexpression.h"
 
 int main() {
     
@@ -43,14 +37,11 @@ int main() {
 	VariableExp<int>* x = new VariableExp<int>("x");
 	VariableExp<int>* y = new VariableExp<int>("y");
 	
-	expression = new SumExpression<int>(
-               (Expression<int>*)(
-                                  new MulExpression<int>((Expression<int>*)x, 
-                                      (Expression<int>*)y)), 
+	expression = new SumExpression<int>((Expression<int>*)x, 
                (Expression<int>*)y);
 	
-	context.assign(x, 2);
-	context.assign(y, 2);
+	context.assignVar("num");
+	context.assignVar(y, 2);
 	
 	int res = expression->evaluate(context);
 	

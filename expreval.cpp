@@ -88,9 +88,11 @@ double ExprEval::ParseSummands(EVAL_CHAR*& expr) {
 	}
 }
 
-double ExprEval::Eval(EVAL_CHAR* expr) {
+double ExprEval::Eval(EVAL_CHAR* expr) 
+{
 	_paren_count = 0;
 	_err = EEE_NO_ERROR;
+	
 	double res = ParseSummands(expr);
 	// Now, expr should point to '\0', and _paren_count should be zero
 	if(_paren_count != 0 || *expr == ')') {

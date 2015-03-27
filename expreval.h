@@ -5,6 +5,12 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "context.h"
+#include "expression.h"
+#include "variableexpr.h"
+#include "sumexpression.h"
+#include "mulexpression.h"
+
 enum EXPR_EVAL_ERR {
 	EEE_NO_ERROR = 0,
 	EEE_PARENTHESIS = 1,
@@ -19,6 +25,9 @@ private:
 	EXPR_EVAL_ERR _err;
 	EVAL_CHAR* _err_pos;
 	int _paren_count;
+	
+	Expression<int>* expression;
+	Context<int> context;
 
 	// Parse a number or an expression in parenthesis
 	double ParseAtom(EVAL_CHAR*& expr);
