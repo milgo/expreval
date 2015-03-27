@@ -8,6 +8,9 @@ template <typename T>
 class Context;
 
 template <typename T>
+class Expression;
+
+template <typename T>
 class VariableExp: public Expression<T>{
 public:
        VariableExp(const char*);
@@ -16,8 +19,12 @@ public:
        virtual T evaluate(Context<T>&);
        virtual Expression<T>* replace(const char*, Expression<T>&);
        virtual Expression<T>* copy() const;
+       char* getName();
+
 private:
         char *_name;
+
 };
+
 
 #endif

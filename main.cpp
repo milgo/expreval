@@ -5,10 +5,13 @@
 #include "expreval.h"
 #include "context.h"
 #include "expression.h"
+#include "variableexpr.h"
+#include "sumexpression.h"
+#include "mulexpression.h"
 
 int main() {
     
-	static const char *errors[] = {
+	/*static const char *errors[] = {
 		"no error",
 		"parentheses don't match",
 		"invalid character",
@@ -32,5 +35,24 @@ int main() {
 		} else {
 			printf("  = %g\n", res);
 		}
-	}
+	}*/
+	
+	Expression<int>* expression;
+	Context<int> context;
+	
+	VariableExp<int>* x = new VariableExp<int>("x");
+	VariableExp<int>* y = new VariableExp<int>("y");
+	
+	expression = new SumExpression<int>(
+               (Expression<int>*)(
+                                  new MulExpression<int>((Expression<int>*)x, 
+                                      (Expression<int>*)y)), 
+               (Expression<int>*)y);
+	
+	context.assign(x, 2);
+	context.assign(y, 2);
+	
+	int res = expression->evaluate(context);
+	
+	printf("%d", res);
 }

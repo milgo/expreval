@@ -1,13 +1,13 @@
-#ifndef __SUMEXPRESSION
-#define __SUMEXPRESSION
+#ifndef __MULEXPRESSION
+#define __MULEXPRESSION
 
 #include "variableexpr.h"
 
 template<typename T>
-class SumExpression: public Expression<T>{
+class MulExpression: public Expression<T>{
 public:
-       SumExpression(Expression<T>*, Expression<T>*);
-       virtual ~SumExpression();
+       MulExpression(Expression<T>*, Expression<T>*);
+       virtual ~MulExpression();
        
        virtual T evaluate(Context<T>&);
        virtual Expression<T>* replace(const char*, Expression<T>&);
