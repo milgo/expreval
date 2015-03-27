@@ -3,16 +3,8 @@
 #include <stdio.h>
 #include <string.h>
 #include "expreval.h"
-
-// ================================
-//   Simple expression evaluator
-// ================================
-
-// Error codes
-
-// ============
-// Main program
-// ============
+#include "context.h"
+#include "expression.h"
 
 int main() {
     
