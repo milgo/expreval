@@ -3,7 +3,8 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <string.h>
+#include <string>
+#include <sstream>
 
 #include "context.h"
 #include "expression.h"
@@ -12,6 +13,8 @@
 #include "subexpression.h"
 #include "mulexpression.h"
 #include "divexpression.h"
+
+using namespace std;
 
 enum EXPR_EVAL_ERR {
 	EEE_NO_ERROR = 0,
@@ -27,7 +30,9 @@ private:
 	EXPR_EVAL_ERR _err;
 	EVAL_CHAR* _err_pos;
 	int _paren_count;
+	int _var_count;
 	
+	VariableExp<double>* minus;
 	Expression<double>* expression;
 	Context<double> context;
 
@@ -107,32 +112,51 @@ private:
 			}
 			expr++;
 			_paren_count--;
-			return negative ? -res : res;
+			return negative ? new MulExpression<double>(res, minus) : (Expression<double>*)res;
 		}
-			// It should be a number; convert it to double
+		
+		// It should be a number; convert it to double
 		char* end_ptr;
 		double res = strtod(expr, &end_ptr);
+		
+		ostringstream ss;
+		ss << _var_count++;
+		string varname = string(ss.str());
+		VariableExp<double>* var = new VariableExp<double>(varname);
+		context.createVar(varname);
+		context.assignVar(varname, res);
+		
 		if(end_ptr == expr) {
 			// Report error
-			// variables not assigned here
 			throw string("EEE_WRONG_CHAR");
-			//_err = EEE_WRONG_CHAR;
+			_err = EEE_WRONG_CHAR;
 			_err_pos = expr;
 			return 0;
 		}
 		// Advance the pointer and return the result
 		expr = end_ptr;
-		return negative ? -res : res;
+		return negative ? new MulExpression<double>(var, minus) : (Expression<double>*)var;
 	}
 
 public:
+	
+	ExprEval()
+	{
+		string varname = "minus";
+		minus = new VariableExp<double>(varname);
+		context.createVar(varname);
+		context.assignVar(varname, -1.0);
+	}
 
 	Expression<double>* Eval(EVAL_CHAR* expr) 
 	{
 		_paren_count = 0;
+		_var_count = 0;
 		_err = EEE_NO_ERROR;
 		
 		Expression<double>* e = ParseSummands(expr);
+		cout << e->evaluate(context) << endl;
+		
 		// Now, expr should point to '\0', and _paren_count should be zero
 		if(_paren_count != 0 || *expr == ')') {
 			_err = EEE_PARENTHESIS;

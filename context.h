@@ -59,6 +59,7 @@ public:
 		int i = getVarIndex(varname);
 		value[i] = x;
 		assigned[i] = true;
+		cout <<" assigning " << varname << "= " << x << endl; 
 	}
        
 private:

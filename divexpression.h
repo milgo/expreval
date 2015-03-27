@@ -1,21 +1,16 @@
 #ifndef __DIVEXPRESSION
 #define __DIVEXPRESSION
 
-#include "variableexpr.h"
+#include "expressionoperation.h"
 
 template<typename T>
-class DivExpression: public Expression<T>{
+class DivExpression: public ExprOperation<T>{
 public:
-       DivExpression(Expression<T>*, Expression<T>*);
-       virtual ~DivExpression();
+		DivExpression(Expression<T>* op1, Expression<T>* op2):ExprOperation<T>(op1, op2){}
        
-       virtual T evaluate(Context<T>&);
-       virtual Expression<T>* replace(const char*, Expression<T>&);
-       virtual Expression<T>* copy() const;
-       
-private:
-        Expression<T>* _operand1;
-        Expression<T>* _operand2;
+       	virtual T evaluate(Context<T>& context){
+			return this->_operand1->evaluate(context) / this->_operand2->evaluate(context);
+	   	}
         
 };
 

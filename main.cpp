@@ -13,31 +13,37 @@ int main() {
 		"invalid character",
 		"division by zero"};
 
-	puts("Enter an expression (or an empty string to exit):");
-	for(;;) {
-		// Get a string from console
-		static char buff[256];
-		char *expr = fgets(buff, sizeof(buff), stdin);
-		printf(buff);
-		// If the string is empty, then exit
-		if(*expr == '\0')
-			return 0;
+	try
+	{
+		puts("Enter an expression (or an empty string to exit):");
+		for(;;) {
 
-		// Evaluate the expression
-		ExprEval<int> eval;
-		
-		//double res = eval.Eval(expr);
-		
-		Expression<double>* expression = eval.Eval(expr);
-		
-		if(eval.GetErr() != EEE_NO_ERROR) {
-			printf("  Error: %s at %s\n", errors[eval.GetErr()], eval.GetErrPos());
-		} else {
-		//	printf("  = %g\n", res);
+			static char buff[256];
+			char *expr = fgets(buff, sizeof(buff), stdin);
+
+			if(*expr == '\0')
+				return 0;
+	
+			// Evaluate the expression
+			ExprEval eval;
+			
+			//double res = eval.Eval(expr);
+			
+			Expression<double>* expression = eval.Eval(expr);
+			
+			/*if(eval.GetErr() != EEE_NO_ERROR) {
+				printf("  Error: %s at %s\n", errors[eval.GetErr()], eval.GetErrPos());
+			} else {
+			//	printf("  = %g\n", res);
+			}*/
 		}
+	}	
+	catch(string e)
+	{
+		cout << "Exception: " << e << endl;
 	}
 	
-	/*Expression<int>* expression;
+/*	Expression<int>* expression;
 	Context<int> context;
 	
 	try
