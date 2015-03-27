@@ -3,6 +3,9 @@
 
 #include "context.h"
 #include "expression.h"
+#include <string>
+
+using namespace std;
 
 template <typename T>
 class Context;
@@ -13,16 +16,33 @@ class Expression;
 template <typename T>
 class VariableExp: public Expression<T>{
 public:
-       VariableExp(const char*);
-       virtual ~VariableExp();
-       
-       virtual T evaluate(Context<T>&);
-       virtual Expression<T>* replace(const char*, Expression<T>&);
-       virtual Expression<T>* copy() const;
-       char* getName();
+
+	T evaluate(Context<T>& context){
+	    return context.lookup(_name);
+	}
+	
+	VariableExp(string name){
+	    _name = name;
+	}
+	
+	~VariableExp(){}
+	
+	Expression<T>* copy() const{
+	    return new VariableExp(_name);
+	}
+	
+	Expression<T>* replace(const char* name, Expression<T>& exp){
+	    if(_name == name){
+	        return exp.copy();
+	    }else{
+	        return new VariableExp(_name);
+	    }
+	}
+	
+	string getName(){return _name;}
 
 private:
-        char *_name;
+        string _name;
 
 };
 

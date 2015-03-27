@@ -26,8 +26,8 @@ private:
 	EVAL_CHAR* _err_pos;
 	int _paren_count;
 	
-	Expression<int>* expression;
-	Context<int> context;
+	//Expression<int>* expression;
+	//Context<int> context;
 
 	// Parse a number or an expression in parenthesis
 	double ParseAtom(EVAL_CHAR*& expr);

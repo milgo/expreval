@@ -16,7 +16,7 @@ SumExpression<T>::~SumExpression(){}
 
 template <typename T>
 T SumExpression<T>::evaluate(Context<T>& context){
-    return _operand1->evaluate(context); /*+ _operand2->evaluate(context);*/
+    return _operand1->evaluate(context) + _operand2->evaluate(context);
 }
 
 template <typename T>

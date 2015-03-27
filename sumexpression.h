@@ -1,7 +1,9 @@
 #ifndef __SUMEXPRESSION
 #define __SUMEXPRESSION
 
+#include "expression.h"
 #include "variableexpr.h"
+
 
 template<typename T>
 class SumExpression: public Expression<T>{

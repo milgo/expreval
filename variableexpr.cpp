@@ -1,6 +1,7 @@
 #include <cstring>
 #include "variableexpr.h"
 
+template class Expression<int>;
 template class VariableExp<int>;
 
 template <typename T> 
