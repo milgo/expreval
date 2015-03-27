@@ -9,7 +9,9 @@
 #include "expression.h"
 #include "variableexpr.h"
 #include "sumexpression.h"
+#include "subexpression.h"
 #include "mulexpression.h"
+#include "divexpression.h"
 
 enum EXPR_EVAL_ERR {
 	EEE_NO_ERROR = 0,
@@ -26,23 +28,130 @@ private:
 	EVAL_CHAR* _err_pos;
 	int _paren_count;
 	
-	//Expression<int>* expression;
-	//Context<int> context;
+	Expression<double>* expression;
+	Context<double> context;
 
-	// Parse a number or an expression in parenthesis
-	double ParseAtom(EVAL_CHAR*& expr);
-
+	Expression<double>* ParseSummands(EVAL_CHAR*& expr) {
+		Expression<double>* num1 = ParseFactors(expr);
+		for(;;) {
+			// Skip spaces
+			while(*expr == ' ')
+				expr++;
+			EVAL_CHAR op = *expr;
+			if(op != '-' && op != '+')
+				return num1;
+			expr++;
+			Expression<double>* num2 = ParseFactors(expr);
+			if(op == '-')
+				num1 = new SubExpression<double>(num1, num2);
+			else
+				num1 = new SumExpression<double>(num1, num2);
+		}
+	}
+	
+	
 	// Parse multiplication and division
-	double ParseFactors(EVAL_CHAR*& expr);
-
-	// Parse addition and subtraction
-	double ParseSummands(EVAL_CHAR*& expr);
+	Expression<double>* ParseFactors(EVAL_CHAR*& expr) {
+		Expression<double>* num1 = ParseAtom(expr);
+		for(;;) {
+			// Skip spaces
+			while(*expr == ' ')
+				expr++;
+			// Save the operation and position
+			EVAL_CHAR op = *expr;
+			EVAL_CHAR* pos = expr;
+			if(op != '/' && op != '*')
+				return num1;
+			expr++;
+			Expression<double>* num2 = ParseAtom(expr);
+			// Perform the saved operation
+			if(op == '/') {
+				// Handle division by zero
+				if(num2 == 0) {
+					throw string("EEE_DIVIDE_BY_ZERO");
+					//_err = EEE_DIVIDE_BY_ZERO;
+					//_err_pos = pos;
+					return 0;
+				}
+				num1 = new DivExpression<double>(num1, num2);
+			}
+			else
+				num1 = new MulExpression<double>(num1, num2);
+		}
+	}
+	
+	Expression<double>* ParseAtom(EVAL_CHAR*& expr) {
+		// Skip spaces
+		while(*expr == ' ')
+			expr++;
+			// Handle the sign before parenthesis (or before number)
+		bool negative = false;
+		if(*expr == '-') {
+			negative = true;
+			expr++;
+		}
+		if(*expr == '+') {
+			expr++;
+		}
+			// Check if there is parenthesis
+		if(*expr == '(') {
+			expr++;
+			_paren_count++;
+			Expression<double>* res = ParseSummands(expr);
+			if(*expr != ')') {
+				// Unmatched opening parenthesis
+				throw string("EEE_PARENTHESIS");
+				//_err = EEE_PARENTHESIS;
+				_err_pos = expr;
+				return 0;
+			}
+			expr++;
+			_paren_count--;
+			return negative ? -res : res;
+		}
+			// It should be a number; convert it to double
+		char* end_ptr;
+		double res = strtod(expr, &end_ptr);
+		if(end_ptr == expr) {
+			// Report error
+			// variables not assigned here
+			throw string("EEE_WRONG_CHAR");
+			//_err = EEE_WRONG_CHAR;
+			_err_pos = expr;
+			return 0;
+		}
+		// Advance the pointer and return the result
+		expr = end_ptr;
+		return negative ? -res : res;
+	}
 
 public:
-	double Eval(EVAL_CHAR* expr);
+
+	Expression<double>* Eval(EVAL_CHAR* expr) 
+	{
+		_paren_count = 0;
+		_err = EEE_NO_ERROR;
+		
+		Expression<double>* e = ParseSummands(expr);
+		// Now, expr should point to '\0', and _paren_count should be zero
+		if(_paren_count != 0 || *expr == ')') {
+			_err = EEE_PARENTHESIS;
+			_err_pos = expr;
+			throw string("EEE_PARENTHESIS");
+		}
+		/*if(*expr != '\0') {
+			printf("tutaj");
+			_err = EEE_WRONG_CHAR;
+			_err_pos = expr;
+			return 0;
+		}*/
+		return e;
+	}
+	
 	EXPR_EVAL_ERR GetErr() {
 		return _err;
 	}
+	
 	EVAL_CHAR* GetErrPos() {
 		return _err_pos;
 	}

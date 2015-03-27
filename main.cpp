@@ -7,7 +7,7 @@
 
 int main() {
     
-	/*static const char *errors[] = {
+	static const char *errors[] = {
 		"no error",
 		"parentheses don't match",
 		"invalid character",
@@ -24,16 +24,20 @@ int main() {
 			return 0;
 
 		// Evaluate the expression
-		ExprEval eval;
-		double res = eval.Eval(expr);
+		ExprEval<int> eval;
+		
+		//double res = eval.Eval(expr);
+		
+		Expression<double>* expression = eval.Eval(expr);
+		
 		if(eval.GetErr() != EEE_NO_ERROR) {
 			printf("  Error: %s at %s\n", errors[eval.GetErr()], eval.GetErrPos());
 		} else {
-			printf("  = %g\n", res);
+		//	printf("  = %g\n", res);
 		}
-	}*/
+	}
 	
-	Expression<int>* expression;
+	/*Expression<int>* expression;
 	Context<int> context;
 	
 	try
@@ -57,5 +61,5 @@ int main() {
 	catch(string e)
 	{
 		cout << "Exception: " << e << endl;
-	}
+	}*/
 }

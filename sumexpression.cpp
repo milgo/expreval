@@ -1,9 +1,9 @@
 #include "sumexpression.h"
 
-template class Context<int>;
-template class VariableExp<int>;
-template class Expression<int>;
-template class SumExpression<int>;
+template class Context<double>;
+template class VariableExp<double>;
+template class Expression<double>;
+template class SumExpression<double>;
 
 template <typename T>
 SumExpression<T>::SumExpression(Expression<T>* op1, Expression<T>* op2){
@@ -16,7 +16,7 @@ SumExpression<T>::~SumExpression(){}
 
 template <typename T>
 T SumExpression<T>::evaluate(Context<T>& context){
-    return _operand1->evaluate(context) + _operand2->evaluate(context);
+    ;
 }
 
 template <typename T>
