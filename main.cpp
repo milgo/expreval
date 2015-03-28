@@ -15,21 +15,17 @@ int main() {
 
 	try
 	{
-        Context<double> context;
-		puts("Enter an expression (or an empty string to exit):");
-		for(;;) {
-
-			static char buff[256];
-			char *expr = fgets(buff, sizeof(buff), stdin);
-
-			if(*expr == '\0')
-				return 0;
-
+        Context<double> doubleContext;
+        Context<string> stringContext;        
+        string strexpr("1+4*num;");
+        cout << strexpr << endl;
 			// Evaluate the expression
-			ExprEval eval(context);
-			Expression<double>* expression = eval.Eval(expr);
+	    ExprEval eval(doubleContext, stringContext);
+        Expression<double>* expression = eval.evalDouble(strexpr);             
+        
+        eval.evalString("\"milgo \"+napis + cast(string, s) + \"hello\";");
 			
-		}
+		//}
 	}	
 	catch(string e)
 	{

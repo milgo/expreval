@@ -30,11 +30,11 @@ private:
 	EXPR_EVAL_ERR _err;
 	EVAL_CHAR* _err_pos;
 	int _paren_count;
-	int _var_count;
 	
 	VariableExp<double>* minus;
-	Expression<double>* expression;
-    Context<double> context;
+	
+    Context<double> doubleContext;
+    Context<string> stringContext;
     
 	Expression<double>* ParseSummands(EVAL_CHAR*& expr) {
 		Expression<double>* num1 = ParseFactors(expr);
@@ -53,7 +53,6 @@ private:
 				num1 = new SumExpression<double>(num1, num2);
 		}
 	}
-	
 	
 	// Parse multiplication and division
 	Expression<double>* ParseFactors(EVAL_CHAR*& expr) {
@@ -120,47 +119,58 @@ private:
 		double res = strtod(expr, &end_ptr);
 		
 		if(end_ptr != expr){
-    		cout << "res=" << res  << "|" << end_ptr << endl;
-    		ostringstream ss;
-    		ss << _var_count++;
-    		string varname = string(ss.str());
+//    		cout << "res=" << res  << "|" << end_ptr << endl;
+    		string varname = doubleContext.getNextVarName();
     		VariableExp<double>* var = new VariableExp<double>(varname);
-    		context.createVar(varname);
-    		context.assignVar(varname, res);
+    		doubleContext.createVar(varname);
+    		doubleContext.assignVar(varname, res);
     		expr = end_ptr;
 		    return negative ? new MulExpression<double>(var, minus) : (Expression<double>*)var;
         }
 		else if(end_ptr == expr) {
             string s = string(expr);
-            
             string varname = s.substr(0, s.find_first_of("+-*/) "));
             VariableExp<double>* var = new VariableExp<double>(varname);
-		    context.createVar(varname);
+		    doubleContext.createVar(varname);
             expr += varname.length();
 		    return negative ? new MulExpression<double>(var, minus) : (Expression<double>*)var;
 		}
+		cout << "wrong" << endl;
 		return new Expression<double>();
 	}
+	
+	
+    string trim(string& str)
+    {
+        size_t first = str.find_first_not_of(" \t\r\n;");
+        size_t last = str.find_last_not_of(" \t\r\n;");
+        return str.substr(first, (last-first+1));
+    }
+
 
 public:
 	
-	ExprEval(Context<double>& c)
+	ExprEval(Context<double>& d, Context<string> s)
 	{
-        context = c;
+        doubleContext = d;
+        stringContext = s;
+        
 		string varname = "minus";
 		minus = new VariableExp<double>(varname);
-		context.createVar(varname);
-		context.assignVar(varname, -1.0);
+		doubleContext.createVar(varname);
+		doubleContext.assignVar(varname, -1.0);
 	}
 
-	Expression<double>* Eval(EVAL_CHAR* expr) 
+	Expression<double>* evalDouble(string strexpr) 
 	{
 		_paren_count = 0;
-		_var_count = 0;
 		_err = EEE_NO_ERROR;
 		
+		strexpr = trim(strexpr);
+		EVAL_CHAR* expr = (char*)strexpr.c_str();
+		
 		Expression<double>* e = ParseSummands(expr);
-		cout << e->evaluate(context) << endl;
+		cout << e->evaluate(doubleContext) << endl;
 		
 		// Now, expr should point to '\0', and _paren_count should be zero
 		if(_paren_count != 0 || *expr == ')') {
@@ -175,6 +185,41 @@ public:
 		}*/
 		return e;
 	}
+	
+	Expression<string>* evalString(EVAL_CHAR* expr) 
+	{
+        string varname = stringContext.getNextVarName();
+        Expression<string>* e = new VariableExp<string>(varname);
+        stringContext.createVar(varname);
+        stringContext.assignVar(varname, "");
+        
+        string strexpr = string(expr);
+        int offset = 0;
+        for(int i=0; i <= strexpr.length(); i++){
+            if(strexpr[i] == '+' || i == strexpr.length()){
+                //zmienna - tylko znaki a-zA-z0-9
+                //stala - wszystko pomiedzy ""
+                //funkcja - nazwa(,)
+                
+                string s = strexpr.substr(offset, i - offset);
+                s = trim(s);
+                if(s.length() == 0){throw string("string eval error");}
+                offset = i + 1;
+                
+                if(s[0] == '"' && s[s.length()-1] == '"'){
+                    s = s.substr(1, s.length()-2);
+                    string varname = stringContext.getNextVarName();
+                    VariableExp<string>* var = new VariableExp<string>(varname);
+    		        stringContext.createVar(varname);
+    		        stringContext.assignVar(varname, s);
+    		        e = new SumExpression<string>(e, var);
+                }
+            }
+        }
+        
+        cout << e->evaluate(stringContext) << endl;
+        
+    }
 	
 	EXPR_EVAL_ERR GetErr() {
 		return _err;

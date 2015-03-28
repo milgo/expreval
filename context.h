@@ -20,7 +20,8 @@ class Context{
 public:
 
 	Context(){
-	    n = 0;
+	    n = 0;	    
+		_var_count = 0;
 	}
 	
 	~Context(){                      
@@ -59,13 +60,20 @@ public:
 		int i = getVarIndex(varname);
 		value[i] = x;
 		assigned[i] = true;
-		cout <<" assigning " << varname << "= " << x << endl; 
 	}
+	
+    string getNextVarName(){
+        ostringstream ss;
+  		ss << _var_count++;
+  		string varname = string(ss.str());
+  		return varname;
+    }
        
 private:
        string name[MAX_VARIABLES];
        T value[MAX_VARIABLES];
        bool assigned[MAX_VARIABLES];
+       int _var_count;
        int n;
        
        
