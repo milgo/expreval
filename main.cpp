@@ -15,6 +15,7 @@ int main() {
 
 	try
 	{
+        Context<double> context;
 		puts("Enter an expression (or an empty string to exit):");
 		for(;;) {
 
@@ -23,19 +24,11 @@ int main() {
 
 			if(*expr == '\0')
 				return 0;
-	
+
 			// Evaluate the expression
-			ExprEval eval;
-			
-			//double res = eval.Eval(expr);
-			
+			ExprEval eval(context);
 			Expression<double>* expression = eval.Eval(expr);
 			
-			/*if(eval.GetErr() != EEE_NO_ERROR) {
-				printf("  Error: %s at %s\n", errors[eval.GetErr()], eval.GetErrPos());
-			} else {
-			//	printf("  = %g\n", res);
-			}*/
 		}
 	}	
 	catch(string e)
@@ -68,4 +61,6 @@ int main() {
 	{
 		cout << "Exception: " << e << endl;
 	}*/
+	
+    system("PAUSE");
 }

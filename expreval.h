@@ -34,8 +34,8 @@ private:
 	
 	VariableExp<double>* minus;
 	Expression<double>* expression;
-	Context<double> context;
-
+    Context<double> context;
+    
 	Expression<double>* ParseSummands(EVAL_CHAR*& expr) {
 		Expression<double>* num1 = ParseFactors(expr);
 		for(;;) {
@@ -104,7 +104,7 @@ private:
 			_paren_count++;
 			Expression<double>* res = ParseSummands(expr);
 			if(*expr != ')') {
-				// Unmatched opening parenthesis
+				// Unmatched opening parenthesis		
 				throw string("EEE_PARENTHESIS");
 				//_err = EEE_PARENTHESIS;
 				_err_pos = expr;
@@ -119,29 +119,34 @@ private:
 		char* end_ptr;
 		double res = strtod(expr, &end_ptr);
 		
-		ostringstream ss;
-		ss << _var_count++;
-		string varname = string(ss.str());
-		VariableExp<double>* var = new VariableExp<double>(varname);
-		context.createVar(varname);
-		context.assignVar(varname, res);
-		
-		if(end_ptr == expr) {
-			// Report error
-			throw string("EEE_WRONG_CHAR");
-			_err = EEE_WRONG_CHAR;
-			_err_pos = expr;
-			return 0;
+		if(end_ptr != expr){
+    		cout << "res=" << res  << "|" << end_ptr << endl;
+    		ostringstream ss;
+    		ss << _var_count++;
+    		string varname = string(ss.str());
+    		VariableExp<double>* var = new VariableExp<double>(varname);
+    		context.createVar(varname);
+    		context.assignVar(varname, res);
+    		expr = end_ptr;
+		    return negative ? new MulExpression<double>(var, minus) : (Expression<double>*)var;
+        }
+		else if(end_ptr == expr) {
+            string s = string(expr);
+            
+            string varname = s.substr(0, s.find_first_of("+-*/) "));
+            VariableExp<double>* var = new VariableExp<double>(varname);
+		    context.createVar(varname);
+            expr += varname.length();
+		    return negative ? new MulExpression<double>(var, minus) : (Expression<double>*)var;
 		}
-		// Advance the pointer and return the result
-		expr = end_ptr;
-		return negative ? new MulExpression<double>(var, minus) : (Expression<double>*)var;
+		return new Expression<double>();
 	}
 
 public:
 	
-	ExprEval()
+	ExprEval(Context<double>& c)
 	{
+        context = c;
 		string varname = "minus";
 		minus = new VariableExp<double>(varname);
 		context.createVar(varname);
@@ -164,7 +169,6 @@ public:
 			throw string("EEE_PARENTHESIS");
 		}
 		/*if(*expr != '\0') {
-			printf("tutaj");
 			_err = EEE_WRONG_CHAR;
 			_err_pos = expr;
 			return 0;

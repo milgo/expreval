@@ -1,9 +1,9 @@
 [Project]
 FileName=expreval.dev
 Name=expreval
-UnitCount=13
+UnitCount=10
 Type=1
-Ver=2
+Ver=1
 ObjFiles=
 Includes=
 Libs=
@@ -91,7 +91,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit6]
-FileName=context.cpp
+FileName=mulexpression.h
 CompileCpp=1
 Folder=
 Compile=1
@@ -101,7 +101,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit10]
-FileName=subexpression.h
+FileName=expressionoperation.h
 CompileCpp=1
 Folder=
 Compile=1
@@ -131,7 +131,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit7]
-FileName=mulexpression.cpp
+FileName=sumexpression.h
 CompileCpp=1
 Folder=
 Compile=1
@@ -141,7 +141,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit8]
-FileName=mulexpression.h
+FileName=subexpression.h
 CompileCpp=1
 Folder=
 Compile=1
@@ -191,7 +191,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit9]
-FileName=sumexpression.h
+FileName=divexpression.h
 CompileCpp=1
 Folder=
 Compile=1
