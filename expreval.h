@@ -6,6 +6,7 @@
 #include <string>
 #include <sstream>
 
+#include "util.h"
 #include "context.h"
 #include "expression.h"
 #include "variableexpr.h"
@@ -120,7 +121,7 @@ private:
 		
 		if(end_ptr != expr){
 //    		cout << "res=" << res  << "|" << end_ptr << endl;
-    		string varname = doubleContext.getNextVarName();
+    		string varname = doubleContext.getNewVarName();
     		VariableExp<double>* var = new VariableExp<double>(varname);
     		doubleContext.createVar(varname);
     		doubleContext.assignVar(varname, res);
@@ -138,15 +139,6 @@ private:
 		cout << "wrong" << endl;
 		return new Expression<double>();
 	}
-	
-	
-    string trim(string& str)
-    {
-        size_t first = str.find_first_not_of(" \t\r\n;");
-        size_t last = str.find_last_not_of(" \t\r\n;");
-        return str.substr(first, (last-first+1));
-    }
-
 
 public:
 	
@@ -161,16 +153,17 @@ public:
 		doubleContext.assignVar(varname, -1.0);
 	}
 
-	Expression<double>* evalDouble(string strexpr) 
+	double evalDouble(string strexpr) 
 	{
 		_paren_count = 0;
 		_err = EEE_NO_ERROR;
 		
-		strexpr = trim(strexpr);
+		strexpr = Util::trim(strexpr);
 		EVAL_CHAR* expr = (char*)strexpr.c_str();
 		
 		Expression<double>* e = ParseSummands(expr);
-		cout << e->evaluate(doubleContext) << endl;
+		double eval =  e->evaluate(doubleContext);
+		//doubleContext.deleteVariables();
 		
 		// Now, expr should point to '\0', and _paren_count should be zero
 		if(_paren_count != 0 || *expr == ')') {
@@ -183,15 +176,15 @@ public:
 			_err_pos = expr;
 			return 0;
 		}*/
-		return e;
+		return eval;
 	}
 	
 	Expression<string>* evalString(EVAL_CHAR* expr) 
 	{
-        string varname = stringContext.getNextVarName();
-        Expression<string>* e = new VariableExp<string>(varname);
-        stringContext.createVar(varname);
-        stringContext.assignVar(varname, "");
+        string varName = stringContext.getNewVarName();
+        Expression<string>* e = new VariableExp<string>(varName);
+        stringContext.createVar(varName);
+        stringContext.assignVar(varName, "");
         
         string strexpr = string(expr);
         int offset = 0;
@@ -202,16 +195,16 @@ public:
                 //funkcja - nazwa(,)
                 
                 string s = strexpr.substr(offset, i - offset);
-                s = trim(s);
+                s = Util::trim(s);
                 if(s.length() == 0){throw string("string eval error");}
                 offset = i + 1;
                 
                 if(s[0] == '"' && s[s.length()-1] == '"'){
                     s = s.substr(1, s.length()-2);
-                    string varname = stringContext.getNextVarName();
-                    VariableExp<string>* var = new VariableExp<string>(varname);
-    		        stringContext.createVar(varname);
-    		        stringContext.assignVar(varname, s);
+                    string varName = stringContext.getNewVarName();
+                    VariableExp<string>* var = new VariableExp<string>(varName);
+    		        stringContext.createVar(varName);
+    		        stringContext.assignVar(varName, s);
     		        e = new SumExpression<string>(e, var);
                 }
             }
